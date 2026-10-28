@@ -41,6 +41,9 @@ use test_case::test_case;
 #[test_case("string_escape", include_str!("../../../testdata/valid/string_escape.rhai"))]
 #[test_case("template", include_str!("../../../testdata/valid/template.rhai"))]
 #[test_case("unary_ops", include_str!("../../../testdata/valid/unary_ops.rhai"))]
+#[test_case("v1_9_0_switch_duplicate", include_str!("../../../testdata/versions/v1-9-0/switch-duplicate.rhai"))]
+#[test_case("v1_9_0_switch_multi_values", include_str!("../../../testdata/versions/v1-9-0/switch-multi-values.rhai"))]
+#[test_case("v1_9_0_module_doc", include_str!("../../../testdata/versions/v1-9-0/module-doc.rhai") => ignore["//! lexed as COMMENT_LINE in LSP"])]
 fn parse_valid(name: &str, src: &str) {
     let parse = Parser::new(src)
         // This operator does not actually exist among the scripts.
