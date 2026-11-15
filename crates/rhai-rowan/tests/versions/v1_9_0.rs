@@ -4,6 +4,7 @@ use rhai_rowan::ast::{AstNode, Expr, Rhai};
 use rhai_rowan::Parser;
 use rhai_rowan::syntax::SyntaxKind;
 
+// `testdata/versions/v1-9-0/switch-multi-values.rhai`
 #[test]
 fn switch_multiple_values () {
     let script = "switch x { 1 | 2 | 3 => 1, _ => 3 }";
@@ -30,6 +31,7 @@ fn switch_multiple_values () {
     assert!(!matches!(pattern.kind(), SyntaxKind::EXPR), "pattern was {pattern:#?}");
 }
 
+// `testdata/versions/v1-9-0/reserved-left-right-pipe.rhai`
 #[test]
 fn reserved_left_pipe() {
     let mut lexer = SyntaxKind::lexer("<|");
@@ -40,6 +42,7 @@ fn reserved_left_pipe() {
     assert!(second.is_none(), "second token was {second:#?}");
 }
 
+// `testdata/versions/v1-9-0/reserved-left-right-pipe.rhai`
 #[test]
 fn reserved_right_pipe() {
     let mut lexer = SyntaxKind::lexer("|>");
@@ -50,6 +53,7 @@ fn reserved_right_pipe() {
     assert!(second.is_none(), "second token was {second:#?}");
 }
 
+// `testdata/versions/v1-9-0/module-doc.rhai`
 #[test]
 fn module_doc() {
     let parse = Parser::new("//! Module docs.\n").parse_script();
@@ -62,4 +66,23 @@ fn module_doc() {
     assert!(first.is_some());
     let first = first.unwrap();
     assert_ne!(first, SyntaxKind::COMMENT_LINE, "//! should be module documentation: {first:#?}");
+}
+
+// `testdata/versions/v1-9-0/switch-duplicate.rhai`
+#[test]
+fn switch_duplicate() {
+    let parse = Parser::new("switch 1 { 1 => 1, 1 => 2 }").parse_script();
+    assert!(parse.errors.is_empty(), "{:#?}", parse);
+    let rhai = Rhai::cast(parse.into_syntax()).unwrap();
+    let stmt = rhai.statements().next().expect("no statement");
+    let expr = stmt.item().and_then(|item| item.expr()).expect("an expression");
+
+    // switch 1 { 1 => 1, 1 => 2 }
+    let Expr::Switch(switch) = expr else {
+        panic!("expected a switch expression, got {expr:#?}");
+    };
+
+    // 1 => 1, 1 => 2
+    let arms = switch.switch_arm_list().unwrap();
+    assert_eq!(arms.arms().count(), 2);
 }
