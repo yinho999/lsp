@@ -3,7 +3,6 @@ use rhai::Token;
 use rhai_rowan::ast::{AstNode, Expr, Rhai};
 use rhai_rowan::syntax::SyntaxKind;
 use rhai_rowan::Parser;
-
 // `testdata/versions/v1-9-0/switch-multi-values.rhai`
 #[test]
 fn switch_multiple_values() {
